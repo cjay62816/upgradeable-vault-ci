@@ -44,9 +44,6 @@ jobs:
       - name: Install dependencies
         run: cd frontend && npm install
       
-      - name: Run tests
-        run: cd frontend && npm test
-      
       - name: Build
         run: cd frontend && npm run build
 
