@@ -16,7 +16,7 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
-          version: latest
+           version: nightly-b76c57e
 
       - name: Run Foundry tests
         run: |
