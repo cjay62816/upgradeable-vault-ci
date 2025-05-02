@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  test-contracts:
+  test-vault:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -20,7 +20,6 @@ jobs:
 
       - name: Run Foundry tests
         run: |
-          cd contracts
           forge install
           forge build
           forge test --gas-report
