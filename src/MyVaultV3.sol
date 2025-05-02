@@ -18,6 +18,10 @@ contract VaultV1 is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     }
 
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
+
+     function version() external virtual pure returns (string memory) {
+        return "V1";
+    }
 }
 
 contract VaultV2 is VaultV1 {
@@ -27,7 +31,7 @@ contract VaultV2 is VaultV1 {
         vaultName = _name;
     }
 
-    function version() external pure returns (string memory) {
+    function version() external override pure returns (string memory) {
         return "V2.1";
     }
 }

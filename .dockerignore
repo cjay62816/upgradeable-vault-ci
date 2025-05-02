@@ -1,0 +1,9 @@
+node_modules
+frontend/node_modules
+frontend/.vite
+dist
+.git
+*.log
+.env
+.env.local
+.DS_Store 
