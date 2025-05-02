@@ -26,4 +26,5 @@ jobs:
 
       - name: Export ABI for frontend
         run: |
+          mkdir -p frontend/src/abi
           forge inspect src/MyVaultV3.sol:VaultV1 abi --json > frontend/src/abi/VaultV1.json
