@@ -16,10 +16,14 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
-           version: v1.1.0  # or use a monthly pinned nightly version
+          version: v1.1.0
 
       - name: Run Foundry tests
         run: |
           forge install
           forge build
           forge test --gas-report
+
+      - name: Export ABI for frontend
+        run: |
+          forge inspect src/MyVaultV3.sol:VaultV1 abi --json > frontend/src/abi/VaultV1.json
