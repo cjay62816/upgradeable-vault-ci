@@ -1,82 +1,74 @@
-# UUPS Vault Deployment Guide
+# UUPS Vault Deployment Guide (Foundry)
+
+This guide walks you through deploying and upgrading a UUPS upgradeable vault using Foundry.
 
 ## Prerequisites
 
-1. **Wallet Setup**:
-   - Install MetaMask: https://metamask.io/download/
-   - Create a new wallet (secure your seed phrase!)
-   - Add Sepolia network to MetaMask:
-     - Network Name: Sepolia
-     - RPC URL: https://sepolia.infura.io/v3/YOUR_INFURA_ID
-     - Chain ID: 11155111
-     - Currency Symbol: ETH
-     - Block Explorer: https://sepolia.etherscan.io
+- Foundry (forge, cast, anvil)
+- Sepolia ETH
+- Environment variables set in `.env`
 
-2. **Get Test ETH**:
-   - Sepolia faucets:
-     - https://sepoliafaucet.com/
-     - https://faucet.quicknode.com/ethereum/sepolia
-     - https://sepolia-faucet.pk910.de/
+## Environment Setup
 
-3. **Infura Account**:
-   - Create account: https://infura.io/
-   - Create new Ethereum project
-   - Copy Project ID
+Create a `.env` file with:
 
-## Configuration
+```env
+PRIVATE_KEY=your_wallet_private_key
+SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_INFURA_PROJECT_ID
+ETHERSCAN_API_KEY=your_etherscan_api_key
+```
 
-1. **Environment Setup**:
-   - Create `.env` file in project root with:
-   ```
-   PRIVATE_KEY=your_wallet_private_key
-   SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/your_infura_project_id
-   ```
-   - To get your private key from MetaMask:
-     - Click three dots (top-right)
-     - Account details
-     - Export private key
+## Deployment Steps
 
-2. **Update Deployment Script**:
-   - Open `scripts/deploy-v1.ts`
-   - Replace `YOUR_WALLET_ADDRESS_HERE` with your actual wallet address
+1. Deploy V1:
 
-## Deployment
+```bash
+source .env && forge script script/DeployUUPSVault.s.sol:DeployScript --rpc-url $SEPOLIA_RPC_URL --broadcast --verify -vvvv
+```
 
-1. **Deploy V1**:
-   ```bash
-   npx hardhat run scripts/deploy-v1.ts --network sepolia
-   ```
-   - Save the proxy address that appears in console
+2. Save the proxy address from the deployment output and add it to your `.env`:
 
-2. **Update Upgrade Script**:
-   - Open `scripts/upgrade-to-v2.ts`
-   - Replace `PROXY_ADDRESS_FROM_V1_DEPLOYMENT` with the proxy address from step 1
+```env
+PROXY_ADDRESS=0x...
+```
 
-3. **Upgrade to V2**:
-   ```bash
-   npx hardhat run scripts/upgrade-to-v2.ts --network sepolia
-   ```
+3. Upgrade to V2:
 
-## Interaction
+```bash
+source .env && forge script script/UpgradeUUPSVault.s.sol:UpgradeScript --rpc-url $SEPOLIA_RPC_URL --broadcast --verify -vvvv
+```
 
-You can interact with your contract using:
-- Etherscan (Sepolia): https://sepolia.etherscan.io/
-- Hardhat console
-- Frontend application
+## Interacting with the Vault
 
-### Available Functions
+1. Read the current value:
+```bash
+cast call $PROXY_ADDRESS "read()(uint256)" --rpc-url $SEPOLIA_RPC_URL
+```
 
-**V1 Functions**:
-- `read()` - Returns the stored value
-- `write(uint256)` - Updates the stored value (only owner)
+2. Write a new value (requires owner):
+```bash
+cast send $PROXY_ADDRESS "write(uint256)" 5678 --private-key $PRIVATE_KEY --rpc-url $SEPOLIA_RPC_URL
+```
 
-**V2 Additional Functions**:
-- `setName(string)` - Sets a name (only owner)
-- `name()` - Returns the name
+3. After upgrade, set the name:
+```bash
+cast send $PROXY_ADDRESS "setName(string)" "MyProtocol" --private-key $PRIVATE_KEY --rpc-url $SEPOLIA_RPC_URL
+```
+
+4. Read the name:
+```bash
+cast call $PROXY_ADDRESS "name()(string)" --rpc-url $SEPOLIA_RPC_URL
+```
+
+## Security Notes
+
+- Keep your private key secure
+- Verify all contract deployments
+- Test upgrades thoroughly before mainnet deployment
+- Consider using a multisig for upgrade authorization
 
 ## Contract Verification (Optional)
 
 ```bash
 npx hardhat verify --network sepolia IMPLEMENTATION_ADDRESS
 ```
-Replace `IMPLEMENTATION_ADDRESS` with the implementation address. 

@@ -4,9 +4,7 @@ pragma solidity ^0.8.20;
 import "forge-std/Test.sol";
 import "../src/MyVaultV1.sol";
 import "../src/MyVaultV2.sol";
-
-// For ERC1967Proxy implementation
-import "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967Proxy.sol";
+import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
 contract MyVaultUpgradeableTest is Test {
     MyVaultV1 public implementation;
@@ -50,23 +48,21 @@ contract MyVaultUpgradeableTest is Test {
     }
 
     function testWriteThroughProxy() public {
+        vm.prank(owner);
         vaultV1.write(5678);
         assertEq(vaultV1.read(), 5678);
     }
 
     function testUpgradeToV2() public {
         // Set a value in V1
+        vm.prank(owner);
         vaultV1.write(9999);
         
         // Deploy V2 implementation
         implementationV2 = new MyVaultV2();
         
         // Upgrade the proxy to V2
-        vaultV1._authorizeUpgrade(address(implementationV2));
-        
-        // This call would be done through the proxy itself, simulating the UUPS pattern
-        // In a real deployment, upgradeToAndCall would be called through the proxy
-        vm.startPrank(owner);
+        vm.prank(owner);
         (bool success, ) = address(proxy).call(
             abi.encodeWithSignature(
                 "upgradeToAndCall(address,bytes)",
@@ -74,7 +70,7 @@ contract MyVaultUpgradeableTest is Test {
                 ""
             )
         );
-        vm.stopPrank();
+        require(success, "Upgrade failed");
         
         // Now cast the proxy to V2 type
         vaultV2 = MyVaultV2(address(proxy));
@@ -83,6 +79,7 @@ contract MyVaultUpgradeableTest is Test {
         assertEq(vaultV2.read(), 9999);
         
         // Test V2 functionality
+        vm.prank(owner);
         vaultV2.setName("MyProtocol");
         assertEq(vaultV2.name(), "MyProtocol");
     }

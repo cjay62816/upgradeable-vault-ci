@@ -1,0 +1,26 @@
+name: Vault CI Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: latest
+
+      - name: Run Foundry tests
+        run: |
+          cd contracts
+          forge install
+          forge build
+          forge test --gas-report
