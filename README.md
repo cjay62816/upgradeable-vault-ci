@@ -40,6 +40,26 @@ This project implements a secure vault system with the following key features:
 - Responsive design with Chakra UI
 - Type-safe contract interactions
 
+## 🔐 Environment Variables & Secrets
+
+### Local Development
+Create a `.env` file in the project root:
+```bash
+SEPOLIA_RPC_URL=your_rpc_url
+PRIVATE_KEY=your_private_key
+ETHERSCAN_API_KEY=your_etherscan_api_key
+```
+
+### CI/CD (GitHub Actions)
+For production deployments, use GitHub Secrets:
+1. Go to your repo's Settings → Secrets → Actions
+2. Add the following secrets:
+   - `SEPOLIA_RPC_URL`
+   - `PRIVATE_KEY`
+   - `ETHERSCAN_API_KEY`
+
+These secrets will be automatically used in the CI pipeline for deployments.
+
 ## 🐳 Docker Support
 
 The frontend is containerized for production deployment:
@@ -147,3 +167,4 @@ $ forge --help
 $ anvil --help
 $ cast --help
 ```
+
