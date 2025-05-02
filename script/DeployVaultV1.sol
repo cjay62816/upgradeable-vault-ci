@@ -16,12 +16,9 @@ contract DeployVaultV1 is Script {
         console.log("VaultV1 implementation deployed at:", address(vaultV1));
 
         // Deploy proxy
-        ERC1967Proxy proxy = new ERC1967Proxy(
-            address(vaultV1),
-            abi.encodeWithSelector(VaultV1.initialize.selector)
-        );
+        ERC1967Proxy proxy = new ERC1967Proxy(address(vaultV1), abi.encodeWithSelector(VaultV1.initialize.selector));
         console.log("Proxy deployed at:", address(proxy));
 
         vm.stopBroadcast();
     }
-} 
+}

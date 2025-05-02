@@ -15,24 +15,17 @@ contract MyVaultTest is Test {
     function setUp() public {
         owner = address(this);
         admin = address(0x123);
-        
+
         // Deploy implementation
         implementation = new MyVaultV1();
-        
+
         // Deploy proxy
-        bytes memory initData = abi.encodeWithSelector(
-            MyVaultV1.initialize.selector,
-            42,
-            admin
-        );
-        
+        bytes memory initData = abi.encodeWithSelector(MyVaultV1.initialize.selector, 42, admin);
+
         // Set msg.sender to owner for initialization
         vm.prank(owner);
-        ERC1967Proxy proxyContract = new ERC1967Proxy(
-            address(implementation),
-            initData
-        );
-        
+        ERC1967Proxy proxyContract = new ERC1967Proxy(address(implementation), initData);
+
         proxy = MyVaultV1(address(proxyContract));
     }
 
@@ -49,31 +42,27 @@ contract MyVaultTest is Test {
     function testUpgradeToV2() public {
         // Deploy V2 implementation
         MyVaultV2 implementationV2 = new MyVaultV2();
-        
+
         // Set initial value
         vm.prank(owner);
         proxy.write(42);
-        
+
         // Upgrade to V2
         vm.prank(owner);
-        (bool success, ) = address(proxy).call(
-            abi.encodeWithSignature(
-                "upgradeToAndCall(address,bytes)",
-                address(implementationV2),
-                ""
-            )
+        (bool success,) = address(proxy).call(
+            abi.encodeWithSignature("upgradeToAndCall(address,bytes)", address(implementationV2), "")
         );
         require(success, "Upgrade failed");
-        
+
         // Cast to V2
         MyVaultV2 proxyV2 = MyVaultV2(address(proxy));
-        
+
         // Test V1 functionality still works
         assertEq(proxyV2.read(), 42);
-        
+
         // Test new V2 functionality
         vm.prank(owner);
         proxyV2.setName("MyVault");
         assertEq(proxyV2.name(), "MyVault");
     }
-} 
+}

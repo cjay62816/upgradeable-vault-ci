@@ -30,4 +30,4 @@ contract MyVaultV1 is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     }
 
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
-} 
+}

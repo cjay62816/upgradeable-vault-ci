@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
 contract UpgradeToV2 is Script {
     // Current proxy address
     address constant PROXY = 0x583aeD8c56ced0575920D9C5D8Be9686bD0bA195;
-    
+
     function run() external {
         uint256 deployerPrivateKey = 0xd8d01fe50dd8aa29cd7cd42b00643042cef4afa4ae7ad6fa76e967ec16432a30;
         vm.startBroadcast(deployerPrivateKey);
@@ -22,7 +22,7 @@ contract UpgradeToV2 is Script {
         console.log("Upgrading proxy to V2 implementation...");
         UUPSUpgradeable(PROXY).upgradeToAndCall(
             address(vaultV2),
-            ""  // No initialization data needed
+            "" // No initialization data needed
         );
         console.log("Upgrade complete. Proxy now points to V2:", address(vaultV2));
 
@@ -34,4 +34,4 @@ contract UpgradeToV2 is Script {
 
         vm.stopBroadcast();
     }
-} 
+}

@@ -53,5 +53,3 @@ contract VaultV3_Broken is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }
-
-
